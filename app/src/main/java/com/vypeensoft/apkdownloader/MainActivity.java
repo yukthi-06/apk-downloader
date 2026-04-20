@@ -43,8 +43,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onReceive(Context context, Intent intent) {
             refreshHistory();
-            Toast.makeText(MainActivity.this, "Check complete", Toast.LENGTH_SHORT).show();
-            textStatus.setText("Last check finished. Press Check Now to scan again.");
+            textStatus.setText("Check complete. Last scan finished.");
         }
     };
 
@@ -125,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String dirString = prefs.getString(SettingsActivity.KEY_DOWNLOAD_DIR, defaultDir);
         
         if (dirString == null || dirString.isEmpty()) {
-            Toast.makeText(this, "Download directory not set", Toast.LENGTH_SHORT).show();
+            textStatus.setText("Error: Download directory not set.");
             return;
         }
 
@@ -141,13 +140,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
                 }
-                Toast.makeText(this, "Deleted " + deletedCount + " APKs", Toast.LENGTH_SHORT).show();
+                textStatus.setText("Deleted " + deletedCount + " APKs. History cleared.");
+            } else {
+                textStatus.setText("No APKs found to delete. History cleared.");
             }
+        } else {
+            textStatus.setText("Directory does not exist. History cleared.");
         }
 
         ApkHistoryManager.clearHistory(this);
         refreshHistory();
-        textStatus.setText("History and APKs cleared.");
     }
 
     private void refreshHistory() {

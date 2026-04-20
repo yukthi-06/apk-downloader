@@ -38,8 +38,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Press Check Now to scan for APKs."
-                android:textSize="16sp"
-                android:layout_marginBottom="16dp"/>
+                android:textSize="14sp"
+                android:padding="12dp"
+                android:background="#F0F0F0"
+                android:textColor="#333333"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"/>
                 
             <Button
                 android:id="@+id/btn_check"
