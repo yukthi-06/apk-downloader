@@ -29,6 +29,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.File;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -67,8 +68,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         textStatus = findViewById(R.id.text_status);
         listHistory = findViewById(R.id.list_history);
         Button btnCheck = findViewById(R.id.btn_check);
+        Button btnClear = findViewById(R.id.btn_clear);
 
         btnCheck.setOnClickListener(v -> startCheck());
+        btnClear.setOnClickListener(v -> clearApks());
 
         checkPermissions();
     }
@@ -114,6 +117,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             startService(serviceIntent);
         }
+    }
+
+    private void clearApks() {
+        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        String dirString = prefs.getString(SettingsActivity.KEY_DOWNLOAD_DIR, "");
+        
+        if (dirString.isEmpty()) {
+            Toast.makeText(this, "Download directory not set", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        File dir = new File(dirString);
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                int deletedCount = 0;
+                for (File file : files) {
+                    if (file.isFile() && file.getName().toLowerCase().endsWith(".apk")) {
+                        if (file.delete()) {
+                            deletedCount++;
+                        }
+                    }
+                }
+                Toast.makeText(this, "Deleted " + deletedCount + " APKs", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        ApkHistoryManager.clearHistory(this);
+        refreshHistory();
+        textStatus.setText("History and APKs cleared.");
     }
 
     private void refreshHistory() {

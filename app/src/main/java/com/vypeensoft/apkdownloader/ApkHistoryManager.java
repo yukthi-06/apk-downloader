@@ -41,6 +41,11 @@ public class ApkHistoryManager {
         }
     }
 
+    public static void clearHistory(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        prefs.edit().remove(KEY_HISTORY).apply();
+    }
+
     private static void saveHistory(Context context, List<String> history) {
         JSONArray array = new JSONArray();
         for (String url : history) {
