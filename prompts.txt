@@ -1,0 +1,17 @@
+===================================================================================================
+The source code was completely copied from "Friends Location Tracker" project
+
+===================================================================================================
+
+The main function of this app is to monitor a HTTP url page for any links to APK files.
+If it found any new APK (It needs to keep a history of old APKs found on this page).
+It then downloads the APK to a specified directry.
+
+The URL to monitor and the directory to save to are configurable via a settings page,
+
+Remove all other existing functionality(as this project source code was copied from another project).
+Retain "Settings", "Help", "About" pages
+
+
+===================================================================================================
+more prompts

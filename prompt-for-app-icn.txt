@@ -1,0 +1,2 @@
+draw me an app icon in PNG format, which shows a APK downloaded. The background color should be while Color
+draw me an app icon in PNG format, which shows a APK downloaded. The background color should be while Color.  It should have the text APK written at the bottom
