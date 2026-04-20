@@ -18,7 +18,7 @@ android {
         applicationId "com.vypeensoft.apkdownloader"
         minSdk 24
         targetSdk 34
-        versionCode (int)(System.currentTimeMillis() / 1000)
+        versionCode Integer.parseInt(System.getenv("GITHUB_RUN_NUMBER") ?: "1")
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
