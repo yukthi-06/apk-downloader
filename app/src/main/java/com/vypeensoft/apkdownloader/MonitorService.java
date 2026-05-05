@@ -74,6 +74,10 @@ public class MonitorService extends Service {
         String dirString = prefs.getString(SettingsActivity.KEY_DOWNLOAD_DIR, "");
 
         if (urlString.isEmpty() || dirString.isEmpty()) {
+            Intent statusIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_STATUS");
+            statusIntent.putExtra("message", "Error: URL or Download Directory not set.");
+            sendBroadcast(statusIntent);
+            
             Intent updateIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_UI");
             sendBroadcast(updateIntent);
             stopSelf();
@@ -154,9 +158,16 @@ public class MonitorService extends Service {
                     }
                 }
             }
-            appendLog(dirString, "Finished checking. Downloaded " + downloadCount + " new APKs.");
+            String finalMessage = "Check complete. " + (downloadCount > 0 ? downloadCount + " new APKs downloaded." : "No new APKs found.");
+            appendLog(dirString, "Finished checking. " + finalMessage);
+            Intent finalStatusIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_STATUS");
+            finalStatusIntent.putExtra("message", finalMessage);
+            sendBroadcast(finalStatusIntent);
         } catch (Exception e) {
             appendLog(dirString, "Exception fetching URL: " + e.getMessage());
+            Intent statusIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_STATUS");
+            statusIntent.putExtra("message", "URL unreachable: " + e.getMessage());
+            sendBroadcast(statusIntent);
         } finally {
             Intent updateIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_UI");
             sendBroadcast(updateIntent);

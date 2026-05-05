@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         @Override
         public void onReceive(Context context, Intent intent) {
             refreshHistory();
-            textStatus.setText("Check complete. Last scan finished.");
         }
     };
 
