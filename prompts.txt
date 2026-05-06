@@ -17,3 +17,6 @@ Retain "Settings", "Help", "About" pages
 more prompts
 *	Make the app.log and history.txt be saved in /sdcard/Vypeensoft/APK_Downloader/*	
 *	Also the default download directory setting to point to  /storage/emulated/0/Vypeensoft/APK_Downloader/
+*	On app start, the download monitor URL is not loaded.
+	User has to come to settings page and hit "SAve Configuration" button.
+	This has to change.  The URL has to be available as soon as app is started

@@ -73,7 +73,7 @@ public class MonitorService extends Service {
         logFileName = "app." + new java.text.SimpleDateFormat("yyyyMMdd.HHmmss").format(new java.util.Date()) + ".log";
         
         SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
-        String urlString = prefs.getString(SettingsActivity.KEY_URL, "");
+        String urlString = prefs.getString(SettingsActivity.KEY_URL, SettingsActivity.DEFAULT_URL);
         String dirString = prefs.getString(SettingsActivity.KEY_DOWNLOAD_DIR, SettingsActivity.DEFAULT_DOWNLOAD_DIR);
 
         if (urlString.isEmpty() || dirString.isEmpty()) {
