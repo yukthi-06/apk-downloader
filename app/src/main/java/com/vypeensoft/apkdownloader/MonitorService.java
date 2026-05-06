@@ -53,12 +53,13 @@ public class MonitorService extends Service {
         return START_NOT_STICKY;
     }
 
-    private void appendLog(String dirString, String message) {
-        if (dirString == null || dirString.isEmpty()) return;
+    private String logFileName = "app.log";
+
+    private void appendLog(String message) {
         try {
-            File dir = new File(dirString);
+            File dir = new File(ApkHistoryManager.LOG_HISTORY_DIR);
             if (!dir.exists()) dir.mkdirs();
-            File logFile = new File(dir, "app.log");
+            File logFile = new File(dir, logFileName);
             try (FileOutputStream fos = new FileOutputStream(logFile, true)) {
                 String logLine = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()) + " - " + message + "\n";
                 fos.write(logLine.getBytes());
@@ -69,6 +70,8 @@ public class MonitorService extends Service {
     }
 
     private void checkAndDownloadApks() {
+        logFileName = "app." + new java.text.SimpleDateFormat("yyyyMMdd.HHmmss").format(new java.util.Date()) + ".log";
+        
         SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
         String urlString = prefs.getString(SettingsActivity.KEY_URL, "");
         String dirString = prefs.getString(SettingsActivity.KEY_DOWNLOAD_DIR, "");
@@ -84,12 +87,12 @@ public class MonitorService extends Service {
             return;
         }
 
-        appendLog(dirString, "Starting check for URL: " + urlString);
+        appendLog("Starting check for URL: " + urlString);
 
         try {
             Document doc = Jsoup.connect(urlString).get();
             Elements links = doc.select("a[href]");
-            appendLog(dirString, "Found " + links.size() + " links on the page.");
+            appendLog("Found " + links.size() + " links on the page.");
 
             File dir = new File(dirString);
             if (!dir.exists()) {
@@ -106,9 +109,9 @@ public class MonitorService extends Service {
                     String fileName = href.substring(href.lastIndexOf('/') + 1);
                     if (fileName.isEmpty()) fileName = "downloaded.apk";
 
-                    if (ApkHistoryManager.isFilenameInHistoryFile(dirString, fileName)) {
+                    if (ApkHistoryManager.isFilenameInHistoryFile(fileName)) {
                         String msg = "APK found in URL already downloaded before: " + fileName;
-                        appendLog(dirString, msg);
+                        appendLog(msg);
                         Intent statusIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_STATUS");
                         statusIntent.putExtra("message", msg);
                         sendBroadcast(statusIntent);
@@ -122,7 +125,7 @@ public class MonitorService extends Service {
                                 for (File file : existingFiles) {
                                     if (file.isFile() && file.getName().toLowerCase().endsWith(".apk")) {
                                         if (file.delete()) {
-                                            appendLog(dirString, "Deleted existing APK: " + file.getName());
+                                            appendLog("Deleted existing APK: " + file.getName());
                                         }
                                     }
                                 }
@@ -130,7 +133,7 @@ public class MonitorService extends Service {
                             existingCleared = true;
                         }
                         
-                        appendLog(dirString, "Found new APK link: " + href);
+                        appendLog("Found new APK link: " + href);
                         // Download
                         Request request = new Request.Builder().url(href).build();
                         try (Response response = client.newCall(request).execute()) {
@@ -146,25 +149,25 @@ public class MonitorService extends Service {
                                     }
                                 }
                                 ApkHistoryManager.addDownload(this, href);
-                                ApkHistoryManager.writeToHistoryFile(dirString, fileName);
-                                appendLog(dirString, "Successfully downloaded: " + fileName);
+                                ApkHistoryManager.writeToHistoryFile(fileName);
+                                appendLog("Successfully downloaded: " + fileName);
                                 downloadCount++;
                             } else {
-                                appendLog(dirString, "Download failed for " + href + " with code: " + response.code());
+                                appendLog("Download failed for " + href + " with code: " + response.code());
                             }
                         } catch (Exception e) {
-                            appendLog(dirString, "Exception during download of " + href + ": " + e.getMessage());
+                            appendLog("Exception during download of " + href + ": " + e.getMessage());
                         }
                     }
                 }
             }
             String finalMessage = "Check complete. " + (downloadCount > 0 ? downloadCount + " new APKs." : "No APKs.");
-            appendLog(dirString, "Finished checking. " + finalMessage);
+            appendLog("Finished checking. " + finalMessage);
             Intent finalStatusIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_STATUS");
             finalStatusIntent.putExtra("message", finalMessage);
             sendBroadcast(finalStatusIntent);
         } catch (Exception e) {
-            appendLog(dirString, "Exception fetching URL: " + e.getMessage());
+            appendLog("Exception fetching URL: " + e.getMessage());
             Intent statusIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_STATUS");
             statusIntent.putExtra("message", "URL unreachable: " + e.getMessage());
             sendBroadcast(statusIntent);

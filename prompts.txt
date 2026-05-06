@@ -15,3 +15,4 @@ Retain "Settings", "Help", "About" pages
 
 ===================================================================================================
 more prompts
+Make the app.log and history.txt be saved in /sdcard/Vypeensoft/APK_Downloader/*	

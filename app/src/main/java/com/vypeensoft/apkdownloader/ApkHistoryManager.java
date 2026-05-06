@@ -14,6 +14,7 @@ public class ApkHistoryManager {
     private static final String PREFS_NAME = "apk_history_prefs";
     private static final String KEY_HISTORY = "history_list";
     private static final String KEY_LAST_CLEARED_SIZE = "last_cleared_size";
+    public static final String LOG_HISTORY_DIR = "/sdcard/Vypeensoft/APK_Downloader/";
 
     public static List<String> getHistory(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -73,10 +74,9 @@ public class ApkHistoryManager {
         prefs.edit().putString(KEY_HISTORY, array.toString()).apply();
     }
 
-    public static void writeToHistoryFile(String dirString, String fileName) {
-        if (dirString == null || dirString.isEmpty()) return;
+    public static void writeToHistoryFile(String fileName) {
         try {
-            java.io.File dir = new java.io.File(dirString);
+            java.io.File dir = new java.io.File(LOG_HISTORY_DIR);
             if (!dir.exists()) dir.mkdirs();
             java.io.File historyFile = new java.io.File(dir, "history.txt");
             try (java.io.FileOutputStream fos = new java.io.FileOutputStream(historyFile, true)) {
@@ -88,9 +88,8 @@ public class ApkHistoryManager {
         }
     }
 
-    public static boolean isFilenameInHistoryFile(String dirString, String fileName) {
-        if (dirString == null || dirString.isEmpty()) return false;
-        java.io.File historyFile = new java.io.File(dirString, "history.txt");
+    public static boolean isFilenameInHistoryFile(String fileName) {
+        java.io.File historyFile = new java.io.File(LOG_HISTORY_DIR, "history.txt");
         if (!historyFile.exists()) return false;
         try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(historyFile))) {
             String line;
