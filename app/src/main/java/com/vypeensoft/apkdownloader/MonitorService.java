@@ -135,6 +135,12 @@ public class MonitorService extends Service {
                         
                         appendLog("Found new APK link: " + href);
                         // Download
+                        String msg = "Downloading new APK: " + fileName;
+                        appendLog(msg);
+                        Intent statusIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_STATUS");
+                        statusIntent.putExtra("message", msg);
+                        sendBroadcast(statusIntent);
+
                         Request request = new Request.Builder().url(href).build();
                         try (Response response = client.newCall(request).execute()) {
                             if (response.isSuccessful() && response.body() != null) {
