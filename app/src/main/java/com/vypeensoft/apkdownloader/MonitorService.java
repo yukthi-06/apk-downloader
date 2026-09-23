@@ -108,8 +108,16 @@ public class MonitorService extends Service {
                 if (href.toLowerCase().endsWith(".apk")) {
                     String fileName = href.substring(href.lastIndexOf('/') + 1);
                     if (fileName.isEmpty()) fileName = "downloaded.apk";
+                    
+                    String originalFileName = fileName;
+                    boolean isAppDebug = "app-debug.apk".equalsIgnoreCase(originalFileName);
+                    
+                    if (isAppDebug) {
+                        String timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd.HHmmss", java.util.Locale.US).format(new java.util.Date());
+                        fileName = "app-debug-" + timestamp + ".apk";
+                    }
 
-                    if (ApkHistoryManager.isFilenameInHistoryFile(fileName)) {
+                    if (!isAppDebug && ApkHistoryManager.isFilenameInHistoryFile(fileName)) {
                         String msg = "APK found in URL already downloaded before: " + fileName;
                         appendLog(msg);
                         Intent statusIntent = new Intent("com.vypeensoft.apkdownloader.UPDATE_STATUS");
@@ -118,20 +126,7 @@ public class MonitorService extends Service {
                         continue;
                     }
 
-                    if (!ApkHistoryManager.hasBeenDownloaded(this, href)) {
-                        if (!existingCleared) {
-                            File[] existingFiles = dir.listFiles();
-                            if (existingFiles != null) {
-                                for (File file : existingFiles) {
-                                    if (file.isFile() && file.getName().toLowerCase().endsWith(".apk")) {
-                                        if (file.delete()) {
-                                            appendLog("Deleted existing APK: " + file.getName());
-                                        }
-                                    }
-                                }
-                            }
-                            existingCleared = true;
-                        }
+                    if (isAppDebug || !ApkHistoryManager.hasBeenDownloaded(this, href)) {
                         
                         appendLog("Found new APK link: " + href);
                         // Download
@@ -154,7 +149,11 @@ public class MonitorService extends Service {
                                         fos.write(buffer, 0, bytesRead);
                                     }
                                 }
-                                ApkHistoryManager.addDownload(this, href);
+                                if (isAppDebug) {
+                                    ApkHistoryManager.addDownload(this, fileName);
+                                } else {
+                                    ApkHistoryManager.addDownload(this, href);
+                                }
                                 ApkHistoryManager.writeToHistoryFile(fileName);
                                 appendLog("Successfully downloaded: " + fileName);
                                 downloadCount++;
