@@ -110,7 +110,7 @@ public class MonitorService extends Service {
                     if (fileName.isEmpty()) fileName = "downloaded.apk";
                     
                     String originalFileName = fileName;
-                    boolean isAppDebug = "app-debug.apk".equalsIgnoreCase(originalFileName);
+                    boolean isAppDebug = "app-debug.apk".equalsIgnoreCase(originalFileName) || "app-arm64-v8a-debug.apk".equalsIgnoreCase(originalFileName);
                     
                     if (isAppDebug) {
                         String timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd.HHmmss", java.util.Locale.US).format(new java.util.Date());
